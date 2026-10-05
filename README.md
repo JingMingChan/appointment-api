@@ -47,7 +47,6 @@ Customers can view available time slots for a date, book one or more consecutive
 | Database | PostgreSQL 16 (`pg` ^8) |
 | Validation | class-validator ^0.14 / class-transformer ^0.5 |
 | API docs | `@nestjs/swagger` 12 + `swagger-ui-express` |
-| Security headers | `helmet` (extra dependency, see [Getting Started](#getting-started)) |
 | Testing | Vitest 4 + Supertest |
 | Linting / formatting | oxlint, Prettier |
 
@@ -65,7 +64,6 @@ Customers can view available time slots for a date, book one or more consecutive
 ```bash
 # 1. Install dependencies
 npm install
-npm install helmet          # used in main.ts; not part of the default Nest scaffold
 
 # 2. Start PostgreSQL
 docker compose up -d
@@ -331,7 +329,7 @@ sequenceDiagram
 
 ```
 src/
-├── main.ts                          # Bootstrap: helmet, ValidationPipe, Swagger
+├── main.ts                          # Bootstrap: Swagger
 ├── app.module.ts                    # Root module: ConfigModule + TypeORM connection
 ├── config/
 │   └── scheduling.config.ts         # Reads and validates scheduling settings from .env
@@ -352,7 +350,6 @@ src/
 - **Input validation**: global `ValidationPipe` with `whitelist` and `forbidNonWhitelisted`, so unknown fields are rejected; format checks for date, time and email; length limits on strings.
 - **UUID validation** on `:id` routes.
 - **SQL injection**: all queries go through TypeORM, which uses parameterized statements.
-- **Security headers** via `helmet` (install it separately: `npm install helmet`).
 - **Fail-fast config**: invalid scheduling settings stop the app at startup.
 
 Authentication and rate limiting are not included (see below).
@@ -366,9 +363,6 @@ Authentication and rate limiting are not included (see below).
 
 **App exits at startup with a message such as `SLOT_DURATION_MINUTES must be >= 5`**
 A scheduling value in `.env` is invalid. Fix the variable named in the message.
-
-**`Cannot find module 'helmet'`**
-Run `npm install helmet`, or remove the `helmet` import and `app.use(helmet())` line from `src/main.ts`.
 
 **`Cannot find module './something'` (ESM)**
 The project is ESM (`"type": "module"`). If your `tsconfig.json` uses `"module": "nodenext"`, relative imports need an explicit `.js` extension, for example `import { AppModule } from './app.module.js'`. Match whatever convention your generated files already use.
